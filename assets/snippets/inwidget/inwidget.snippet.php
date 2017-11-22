@@ -7,8 +7,9 @@ $imgRandom = isset($imgRandom) ? $imgRandom : false;
 $imgCount = isset($imgCount) ? $imgCount : '3';
 $cacheExpiration = isset($cacheExpiration) ? $cacheExpiration : '6';
 $cacheSkip = isset($cacheSkip) ? $cacheSkip : false;
+$dateFormat = isset($dateFormat) ? $dateFormat : '%d.%m.%Y'; 
 
-$tpl = isset($tpl) ? $modx->getTpl($tpl) : '[+id+] [+code+] [+created+] [+text+] [+link+] [+fullsize+] [+large+] [+small+] [+likesCount+] [+commentsCount+] [+authorId+]';
+$tpl = isset($tpl) ? $modx->getTpl($tpl) : '[+id+] [+code+] [+created+] [+date+] [+text+] [+link+] [+fullsize+] [+large+] [+small+] [+likesCount+] [+commentsCount+] [+authorId+]';
 $outerTpl = isset($outerTpl) ? $modx->getTpl($outerTpl) : '[+userid+] [+username+] [+avatar+] [+posts+] [+followers+] [+following+] [+wrapper+]';	
 
 $config = array(	
@@ -67,6 +68,7 @@ if($count>0) {
 	foreach ($inWidget->data->images as $key=>$item){
 		if($inWidget->isBannedUserId($item->authorId) === true) continue;
 			$item = json_decode(json_encode($item), true);
+			$item['date'] = strftime($dateFormat,$item['created']);
 			$wrapper .= $modx->parseText($tpl, $item, '[+', '+]' );
 		$i++;
 		if($i >= $inWidget->view) break;
