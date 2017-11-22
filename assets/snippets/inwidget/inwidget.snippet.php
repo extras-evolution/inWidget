@@ -71,7 +71,7 @@ if($count>0) {
 			$item['date'] = strftime($dateFormat,$item['created']);
 			$wrapper .= $modx->parseText($tpl, $item, '[+', '+]' );
 		$i++;
-		if($i >= $inWidget->view) break;
+		if($i >= $imgCount) break;
 	}
 }	
 $data = json_decode(json_encode($inWidget->data), true);
