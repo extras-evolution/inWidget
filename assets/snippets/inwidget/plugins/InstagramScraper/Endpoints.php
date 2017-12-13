@@ -17,7 +17,8 @@ class Endpoints
     const ACCOUNT_JSON_INFO_BY_ID = 'ig_user({userId}){id,username,external_url,full_name,profile_pic_url,biography,followed_by{count},follows{count},media{count},is_private,is_verified}';
     const COMMENTS_BEFORE_COMMENT_ID_BY_CODE = 'https://www.instagram.com/graphql/query/?query_id=17852405266163336&shortcode={{shortcode}}&first={{count}}&after={{commentId}}';
     const LAST_LIKES_BY_CODE = 'ig_shortcode({{code}}){likes{nodes{id,user{id,profile_pic_url,username,follows{count},followed_by{count},biography,full_name,media{count},is_private,external_url,is_verified}},page_info}}';
-    const FOLLOWING_URL = 'https://www.instagram.com/graphql/query/?query_id=17874545323001329&id={{accountId}}&first={{count}}';
+    const LIKES_BY_SHORTCODE = 'https://www.instagram.com/graphql/query/?query_id=17864450716183058&variables={"shortcode":"{{shortcode}}","first":{{count}},"after":"{{likeId}}"}';
+    const FOLLOWING_URL = 'https://www.instagram.com/graphql/query/?query_id=17874545323001329&id={{accountId}}&first={{count}}&after={{after}}';
     const FOLLOWERS_URL = 'https://www.instagram.com/graphql/query/?query_id=17851374694183129&id={{accountId}}&first={{count}}&after={{after}}';
     const FOLLOW_URL = 'https://www.instagram.com/web/friendships/{{accountId}}/follow/';
     const UNFOLLOW_URL = 'https://www.instagram.com/web/friendships/{{accountId}}/unfollow/';
@@ -32,6 +33,10 @@ class Endpoints
     const URL_SIMILAR = 'https://www.instagram.com/graphql/query/?query_id=17845312237175864&id=4663052';
 
     const GRAPH_QL_QUERY_URL = 'https://www.instagram.com/graphql/query/?query_id={{queryId}}';
+
+    //stories use GRAPH_QL_QUERY_URL
+    const USER_STORIES_QUERY_ID = '17890626976041463';
+    const STORIES_QUERY_ID = '17873473675158481';
 
 
     public static function getAccountPageLink($username)
@@ -95,11 +100,21 @@ class Endpoints
         return $url;
     }
 
+    public static function getLastLikesByCode($code, $count, $lastLikeID)
+    {
+        $url = str_replace('{{shortcode}}', urlencode($code), static::LIKES_BY_SHORTCODE);
+        $url = str_replace('{{count}}', urlencode($count), $url);
+        $url = str_replace('{{likeId}}', urlencode($lastLikeID), $url);
+
+        return $url;
+    }
+
     public static function getGraphQlUrl($queryId, $parameters)
     {
         $url = str_replace('{{queryId}}', urlencode($queryId), static::GRAPH_QL_QUERY_URL);
-        foreach ($parameters as $key => $value) {
-            $url .= "&$key=$value";
+        if (!empty($parameters)) {
+            $query_string = http_build_query($parameters);
+            $url .= '&' . $query_string;
         }
         return $url;
     }
@@ -121,6 +136,32 @@ class Endpoints
             $url = str_replace('{{after}}', urlencode($after), $url);
         }
 
+        return $url;
+    }
+
+    public static function getFollowingJsonLink($accountId, $count, $after = '')
+    {
+        $url = str_replace('{{accountId}}', urlencode($accountId), static::FOLLOWING_URL);
+        $url = str_replace('{{count}}', urlencode($count), $url);
+
+        if ($after === '') {
+            $url = str_replace('&after={{after}}', '', $url);
+        } else {
+            $url = str_replace('{{after}}', urlencode($after), $url);
+        }
+
+        return $url;
+    }
+
+    public static function getUserStoriesLink()
+    {
+        $url = self::getGraphQlUrl(static::USER_STORIES_QUERY_ID, ['variables' => json_encode([])]);
+        return $url;
+    }
+
+    public static function getStoriesLink($variables)
+    {
+        $url = self::getGraphQlUrl(static::STORIES_QUERY_ID, ['variables' => json_encode($variables)]);
         return $url;
     }
 }

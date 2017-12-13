@@ -75,5 +75,7 @@ if($count>0) {
 	}
 }	
 $data = json_decode(json_encode($inWidget->data), true);
-$data['wrapper'] = $wrapper;
+if (is_array($data)){
+	$data['wrapper'] = $wrapper;
+}
 return $modx->parseText($outerTpl, $data, '[+', '+]' );

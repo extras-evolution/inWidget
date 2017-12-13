@@ -407,6 +407,16 @@ class Media extends AbstractModel
                 $this->videoStandardResolutionUrl = $arr[$prop]['standard_resolution']['url'];
                 $this->videoLowBandwidthUrl = $arr[$prop]['low_bandwidth']['url'];
                 break;
+            case 'video_resources':
+                foreach ($value as $video) {
+                    if ($video['profile'] == 'MAIN') {
+                        $this->videoStandardResolutionUrl = $video['src'];
+                    } elseif ($video['profile'] == 'BASELINE') {
+                        $this->videoLowResolutionUrl = $video['src'];
+                        $this->videoLowBandwidthUrl = $video['src'];
+                    }
+                }
+                break;
             case 'location':
                 switch ($prop) {
                     case 'id':
@@ -459,7 +469,14 @@ class Media extends AbstractModel
                 $this->imageThumbnailUrl = $images['thumbnail'];
                 break;
             case 'edge_media_to_caption':
-                $this->caption = $arr[$prop]['edges'][0]['node']['text'];
+                if (is_array($arr[$prop]['edges']) && !empty($arr[$prop]['edges'])) {
+                    $first_caption = $arr[$prop]['edges'][0];
+                    if (is_array($first_caption) && isset($first_caption['node'])) {
+                        if (is_array($first_caption['node']) && isset($first_caption['node']['text'])) {
+                            $this->caption = $arr[$prop]['edges'][0]['node']['text'];
+                        }
+                    }
+                }
                 break;
             case 'owner':
                 $this->owner = Account::create($arr[$prop]);
