@@ -5,7 +5,7 @@
  * inWidget.ru for Evolution CMS
  *
  * @category 	snippet
- * @version 	1.2.2
+ * @version 	1.2.3
  * @license 	http://www.gnu.org/copyleft/gpl.html GNU Public License (GPL)
  * @internal	@properties 
  * @internal	@modx_category Content
