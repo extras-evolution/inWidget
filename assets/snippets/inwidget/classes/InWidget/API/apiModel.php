@@ -8,10 +8,10 @@ namespace inWidget\API;
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of MIT license
- * http://inwidget.ru/MIT-license.txt
+ * https://inwidget.ru/MIT-license.txt
  *
- * @link http://inwidget.ru
- * @copyright 2014-2018 Alexandr Kazarmshchikov
+ * @link https://inwidget.ru
+ * @copyright 2014-2019 Alexandr Kazarmshchikov
  * @author Alexandr Kazarmshchikov
  * @package inWidget\API
  *

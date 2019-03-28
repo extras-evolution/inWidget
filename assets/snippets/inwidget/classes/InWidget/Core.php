@@ -11,10 +11,10 @@ use inWidget\Exception\inWidgetException;
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of MIT license
- * http://inwidget.ru/MIT-license.txt
+ * https://inwidget.ru/MIT-license.txt
  *
- * @link http://inwidget.ru
- * @copyright 2014-2018 Alexandr Kazarmshchikov
+ * @link https://inwidget.ru
+ * @copyright 2014-2019 Alexandr Kazarmshchikov
  * @author Alexandr Kazarmshchikov
  * @package inWidget
  *
@@ -36,6 +36,8 @@ class Core
 	public $preview = 'large';
 	public $imgWidth = 0;
 	public $skipGET = false;
+	public $loginAvailable = [];
+	public $tagsAvailable = [];
 	public $lang = [];
 	public $langName = '';
 	public $langAvailable = ['ru','en','ua'];
@@ -235,23 +237,60 @@ class Core
 	 */
 	private function checkConfig() 
 	{
+		if(!empty($this->config['skinAvailable'])) {
+			$this->skinAvailable = $this->config['skinAvailable'];
+		}
+		if(!empty($this->config['langAvailable'])) {
+			$this->langAvailable = $this->config['langAvailable'];
+		}
+		if(!empty($this->config['loginAvailable'])) {
+			$this->loginAvailable = $this->config['loginAvailable'];
+		}
+		if(!empty($this->config['tagsAvailable'])) {
+			$this->tagsAvailable = $this->config['tagsAvailable'];
+		}
 		if(empty($this->config['LOGIN'])) {
 			throw new \Exception(__CLASS__.': LOGIN required in config.php');
 		}
 		if(!in_array($this->config['langDefault'], $this->langAvailable, true)){
-			throw new \Exception(__CLASS__.': default language does not present in "langAvailable" class property');
+			throw new \Exception(__CLASS__.': default language does not present in "langAvailable" config property');
 		}
 		if(!in_array($this->config['skinDefault'], $this->skinAvailable, true)){
-			throw new \Exception(__CLASS__.': default skin does not present in "skinAvailable" class property');
+			throw new \Exception(__CLASS__.': default skin does not present in "skinAvailable" config property');
 		}
+		// prepare paths
 		$this->langPath = __DIR__.'/'.$this->langPath; // PHP < 5.6 fix
 		$this->cachePath = __DIR__.'/'.$this->cachePath; // PHP < 5.6 fix
+		// prepare login
+		if($this->skipGET === false) {
+			if(isset($_GET['login'])) {
+				if(in_array($_GET['login'], $this->loginAvailable)){
+					$this->config['LOGIN'] = $_GET['login'];
+					// login priority by default tags
+					$this->config['HASHTAG'] = "";
+				}
+				else {
+					throw new \Exception(__CLASS__.': login does not present in "loginAvailable" config property');
+				}
+			}
+		}
 		$this->config['LOGIN'] = strtolower(trim($this->config['LOGIN']));
 		$cacheFileName = md5($this->config['LOGIN']);
+		// prepare hashtags
+		if($this->skipGET === false) {
+			if(isset($_GET['tag'])) {
+				if(in_array($_GET['tag'], $this->tagsAvailable)){
+					$this->config['HASHTAG'] = urldecode($_GET['tag']);
+				}
+				else {
+					throw new \Exception(__CLASS__.': tag does not present in "tagsAvailable" config property');
+				}
+			}
+		}
 		if(!empty($this->config['HASHTAG'])) {
 			$this->config['HASHTAG'] = trim($this->config['HASHTAG']);
 			$this->config['HASHTAG'] = str_replace('#', '', $this->config['HASHTAG']);
-			$cacheFileName = md5($this->config['HASHTAG'].'_tags');
+			$cacheFileName = md5($cacheFileName.$this->config['HASHTAG'].'_tags');
 		}
 		if(!empty($this->config['skinPath'])) {
 			$this->skinPath = $this->config['skinPath'];

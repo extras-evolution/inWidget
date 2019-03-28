@@ -6,12 +6,12 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of MIT license
- * http://inwidget.ru/MIT-license.txt
+ * https://inwidget.ru/MIT-license.txt
  * 
- * @link http://inwidget.ru
- * @copyright 2014-2018 Alexandr Kazarmshchikov
+ * @link https://inwidget.ru
+ * @copyright 2014-2019 Alexandr Kazarmshchikov
  * @author Alexandr Kazarmshchikov
- * @version 1.2.7
+ * @version 1.3.1
  * @package inWidget
  * 
  */
@@ -22,6 +22,8 @@ header('Content-type: text/html; charset=utf-8');
 
 if(phpversion() < "5.4.0") 		die('inWidget required PHP >= <b>5.4.0</b>. Your version: '.phpversion());
 if(!extension_loaded('curl')) 	die('inWidget required <b>cURL PHP extension</b>. Please, install it or ask your hosting provider.');
+
+#ini_set('include_path', __DIR__ .'/' ); 
 
 #require_once 'classes/Autoload.php';
 require_once 'classes/InstagramScraper.php';
@@ -48,12 +50,14 @@ catch (\Exception $e) {
 /*
 try {
 
-	// Options may change through class constructor. For example:
+	// Options may change through the class constructor. For example:
 	
 	$config = array(
 		'LOGIN' => 'fotokto_ru',
 		'HASHTAG' => '',
 		'ACCESS_TOKEN' => '',
+		'authLogin' => '',
+		'authPassword' => '',
 		'tagsBannedLogins' => '',
 		'tagsFromAccountOnly' => false,
 		'imgRandom' => false,
